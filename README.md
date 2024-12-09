@@ -24,7 +24,19 @@ Additionally, `data/evaluate/` also contains solutions for the evaluation.
 We will run the final evaluation on a *different* dataset of a similar format, so make sure your solution is general enough to work on unseen data.
 We might assess the effctivenss of your method on more challanging data if that helps to more clearly determine winners.
 
-A pixel corresponds to 1mm in real world. The gripper SVGs are scaled accordingly.
+### Conventions in the data
+
+A pixel in the mask and gripper files corresponds to 1mm in the real world. The gripper SVGs are also scaled accordingly.
+
+The coordinates in an image are given in the following way:
+
+<img src="doc/coordinate-system.png" alt="Visual explanation of the coordinate systems" width="400px" />
+
+Here, `x` ranges from `0` to `width`, and `y` ranges from `0` to `height`. The coordinates reference the borders between the pixels (edge/corner-based coordinates), so `(x, y) = (1, 0)` would be between the first and second pixels in the first row.
+
+The angle `α` is given in degrees and ranges from `0` (inclusive) to `360` (exclusive). It is measured clockwise, with `0°` pointing to the right.
+
+The positioning of the gripper shall always be given as its center point (and rotation around that point). So `(x, y, α) = (width/2, 0, 90)` would position the gripper in the center of the top edge of the image, pointing downwards.
 
 ## Your solution and the evaluation
 
@@ -90,6 +102,16 @@ python evaluate/eval.py 'super_fast_assembly_solution'
 ```
 
 **NOTE: This is currently a placeholder evaluation script. We will provide a complete evaluation on the actual data soon. It will also account for possibly ambigous solutions.**
+
+### Evaluation Metrics
+
+We will measure the performance of your solution $(x, y, \alpha)$ on a given image of size $w \times h$ as follows:
+
+$$
+    \text{Score} = \min_{\text{over all perfect solutions} \; (x', y', \alpha')} \frac{1}{3} \left( 
+        \frac{|x - x'|}{w} + \frac{|y - y'|}{h} + \frac{|\alpha - \alpha'|}{360}
+    \right) .
+$$
 
 ## License
 
