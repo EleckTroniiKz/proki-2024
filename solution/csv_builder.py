@@ -20,7 +20,7 @@ def generate_csv(folder_path: str, output_csv: str):
 
     for part_folder in folder_path.iterdir():
         print( folder_path.iterdir())
-        if part_folder.is_dir() and part_folder.name.startswith("part_"):
+        if part_folder.is_dir() and part_folder.name.startswith("part_") or part_folder.name.isnumeric():
             # Identify the file with only a number as the name
             part_file = find_gripper("png", part_folder)
 
@@ -45,4 +45,4 @@ def generate_csv(folder_path: str, output_csv: str):
 
 # Example usage
 if __name__ == "__main__":
-    generate_csv("/* Folder path of dummy folder", "NAMEOFOUTPUTFILE.csv")
+    generate_csv("FOLDER PATH", "generated_input_file_eva.csv")
