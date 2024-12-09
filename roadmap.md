@@ -6,11 +6,11 @@
     * Wöchentliche Meetings (Fix Meeting Montag, falls nicht, dann wird ein anderer Tag besprochen)
 
  * Pre-Processing
-    * Bilder einlesen (Part, Gripper)
+    * Bilder einlesen (Part, Gripper) [Can]
     * Kurz-Evaluierung geeigneter Libraries
     * Parts Masks erstellen (Edge Detection, ...) [Lukas]
 
- * Algorithmus
+ * Algorithmus [Torben] [Philip]
     * TBD -> Gripper positioning and rotation
         * Definition von Algorithmus (alle maybe?)
         * Output: gripper, part, x, y, winkel
