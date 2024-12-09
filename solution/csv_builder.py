@@ -1,7 +1,10 @@
 import os
 from pathlib import Path
 import pandas as pd
+import re
 
+def find_gripper(ext, part_folder):
+    return next((f for f in part_folder.iterdir() if f.is_file() and re.match(r'gripper_', f.name)), None)
 
 def generate_csv(folder_path: str, output_csv: str):
     """
@@ -16,16 +19,19 @@ def generate_csv(folder_path: str, output_csv: str):
     rows = []
 
     for part_folder in folder_path.iterdir():
+        print( folder_path.iterdir())
         if part_folder.is_dir() and part_folder.name.startswith("part_"):
             # Identify the file with only a number as the name
-            part_file = next((f for f in part_folder.iterdir() if f.is_file() and f.stem.isdigit()), None)
+            part_file = find_gripper("png", part_folder)
 
             if not part_file:
-                print(f"Part not found {part_folder}. File will be skipped.")
-                continue
+                part_file = find_gripper("svg", part_folder)
+                if not part_file:
+                    print(f"Part not found {part_folder}. File will be skipped.")
+                    continue
 
             # Identify all mask files
-            mask_files = [f for f in part_folder.iterdir() if f.is_file() and f.name.startswith("mask_")]
+            mask_files = [f for f in part_folder.iterdir() if f.is_file() and f.name.startswith("part_")]
 
             # Add rows to the output for each mask file
             for mask_file in mask_files:
@@ -39,4 +45,4 @@ def generate_csv(folder_path: str, output_csv: str):
 
 # Example usage
 if __name__ == "__main__":
-    generate_csv("folderPathForAllParts", "generated_input_file.csv")
+    generate_csv("/* Folder path of dummy folder", "NAMEOFOUTPUTFILE.csv")
