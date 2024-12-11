@@ -107,6 +107,9 @@ python evaluate/eval.py 'super_fast_assembly_solution'
 
 ### Evaluation Metrics
 
+<img src="doc/proki-evaluation-definition.png" alt="The evaluation metric" width="600px" /> 
+
+
 First and foremost: Please document which design decisions you took in solving the problem! The quality of your documentation and your design decisions will be the tie breaker between solutions with similar quality.
 
 The quantitative evaluation will be as follows:
