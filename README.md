@@ -38,6 +38,8 @@ The angle `α` is given in degrees and ranges from `0` (inclusive) to `360` (exc
 
 The positioning of the gripper shall always be given as its center point (and rotation around that point). So `(x, y, α) = (width/2, 0, 90)` would position the gripper in the center of the top edge of the image, pointing downwards.
 
+<img src="doc/gripper_definitions.png" alt="The gripper coordinate definitions" width="400px" /> 
+
 ## Your solution and the evaluation
 
 You can either:
