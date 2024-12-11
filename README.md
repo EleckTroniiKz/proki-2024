@@ -24,7 +24,21 @@ Additionally, `data/evaluate/` also contains solutions for the evaluation.
 We will run the final evaluation on a *different* dataset of a similar format, so make sure your solution is general enough to work on unseen data.
 We might assess the effctivenss of your method on more challanging data if that helps to more clearly determine winners.
 
-A pixel corresponds to 1mm in real world. The gripper SVGs are scaled accordingly.
+### Conventions in the data
+
+A pixel in the mask and gripper files corresponds to 1mm in the real world. The gripper SVGs are also scaled accordingly.
+
+The coordinates in an image are given in the following way:
+
+<img src="doc/coordinate-system.png" alt="Visual explanation of the coordinate systems" width="400px" />
+
+Here, `x` ranges from `0` to `width`, and `y` ranges from `0` to `height`. The coordinates reference the borders between the pixels (edge/corner-based coordinates), so `(x, y) = (1, 0)` would be between the first and second pixels in the first row.
+
+The angle `α` is given in degrees and ranges from `0` (inclusive) to `360` (exclusive). It is measured clockwise, with `0°` pointing to the right.
+
+The positioning of the gripper shall always be given as its center point (and rotation around that point). So `(x, y, α) = (width/2, 0, 90)` would position the gripper in the center of the top edge of the image, pointing downwards.
+
+<img src="doc/gripper_definitions.png" alt="The gripper coordinate definitions" width="400px" /> 
 
 ## Your solution and the evaluation
 
@@ -90,6 +104,33 @@ python evaluate/eval.py 'super_fast_assembly_solution'
 ```
 
 **NOTE: This is currently a placeholder evaluation script. We will provide a complete evaluation on the actual data soon. It will also account for possibly ambigous solutions.**
+
+### Evaluation Metrics
+
+<img src="doc/proki-evaluation-definition.png" alt="The evaluation metric" width="600px" /> 
+
+
+First and foremost: Please document which design decisions you took in solving the problem! The quality of your documentation and your design decisions will be the tie breaker between solutions with similar quality.
+
+The quantitative evaluation will be as follows:
+We will use an evaluation set of data, with similar but new parts to assess your solution.
+
+- There must be no intersection between the gripper points and the edges or holes of the part. This is a hard constraint and will lead to 0 points if unfullfilled.
+- Minimize the distance between the center of the gripper and the center of the part (approximated as the center of the image). Closer is better.
+
+The following equation represents the optimization goal:
+
+$$\text{Minimize: } \sqrt{(x_{gripper} - x_{part})^2 + (y_{gripper} - y_{part})^2}$$  
+
+Subject to the constraint:  
+$$\text{Intersection}(\text{Gripper Area}, \text{Part Edges or Holes}) = 0$$
+
+
+Where:
+- $\((x_{gripper}, y_{gripper})\)$ are the coordinates of the gripper center.
+- $\((x_{part}, y_{part})\)$ are the coordinates of the part center.
+- The intersection condition ensures that no part of the gripper overlaps with the edges or holes of the part. This is calculated using a part mask and geometric intersection checks. It is also why we need the angle in your results.
+
 
 ## License
 
