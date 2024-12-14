@@ -45,4 +45,4 @@ def generate_csv(folder_path: str, output_csv: str):
 
 # Example usage
 if __name__ == "__main__":
-    generate_csv("FOLDER PATH", "generated_input_file_eva.csv")
+    generate_csv("C:\\Users\\pscha\\Desktop\\proki-2024\\data\\dummy", "generated_input_file_eva.csv")
