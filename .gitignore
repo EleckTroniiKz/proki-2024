@@ -2,6 +2,8 @@
 data/**
 !data/dummy/** */
 
+solution/*.csv
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
