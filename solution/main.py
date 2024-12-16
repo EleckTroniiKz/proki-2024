@@ -6,6 +6,13 @@ from rich.progress import track
 import pandas as pd
 
 from algorithm import findCenterOfGripper
+from solution.algorithm import findCenterOfGripper
+
+def create_part_mask(part_image_path: Path, invert_mask: bool = False, blur_method = "median", adaptive = True, area_filter = True, show_images = False) -> np.ndarray:
+    # Load the image
+    img = cv2.imread(str(part_image_path), cv2.IMREAD_COLOR)
+    if img is None:
+        raise ValueError(f"Could not read the image from {part_image_path}")
 
 
 
