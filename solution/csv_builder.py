@@ -11,13 +11,13 @@ def find_gripper(part_folder):
     """
     # Look for PNG first
     gripper_file = next(
-        (f for f in part_folder.iterdir() if f.is_file() and re.match(r'^gripper_\d+\.png$', f.name)),
+        (f for f in part_folder.iterdir() if f.is_file() and re.match(r'^gripper_\d+\.svg$', f.name)),
         None
     )
     # If no PNG found, look for SVG
     if not gripper_file:
         gripper_file = next(
-            (f for f in part_folder.iterdir() if f.is_file() and re.match(r'^gripper_\d+\.svg$', f.name)),
+            (f for f in part_folder.iterdir() if f.is_file() and re.match(r'^gripper_\d+\.png$', f.name)),
             None
         )
     return gripper_file
@@ -74,8 +74,4 @@ def generate_csv(parent_folder: str, output_csv: str):
 
 # Example usage
 if __name__ == "__main__":
-    generate_csv("YOUR_PARENT_FOLDER", "FILE_NAME_FOR_OUTPUT")
-    
-    """
-    Make sure that your first parameter for generate_csv is a parent folder, of folders. And those subfolders contain atleast one gripper and one part.
-    """
+    generate_csv("C:\\Users\\pscha\\Desktop\\proki-2024\\data\\dummy", "generated_input_file_eva.csv")
