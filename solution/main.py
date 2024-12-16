@@ -49,6 +49,16 @@ def create_part_mask(part_image_path: Path, invert_mask: bool = False, blur_meth
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
+    masks_dir = (Path(__file__).resolve().parent / "_masks")
+    masks_dir.mkdir(exist_ok=True)
+
+    original_stem = part_image_path.stem
+    mask_filename = masks_dir / f"{original_stem}_mask.png"
+    original_filename = masks_dir / f"{original_stem}_original.png"
+
+    cv2.imwrite(str(original_filename), img)
+    cv2.imwrite(str(mask_filename), mask)
+
     return mask
 
 
