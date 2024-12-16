@@ -38,6 +38,7 @@ def findCenterOfGripper(image_path, greifer_path):
 
     greifer_position = calcCenterOfGripper(teil_img, greifer_img)
 
+    #Enable gripper overlap with part(1/2)
     #fig, ax = plt.subplots()
     #ax.imshow(teil_img, cmap="gray")
     #ax.invert_yaxis()
@@ -54,6 +55,7 @@ def findCenterOfGripper(image_path, greifer_path):
     
     #ax.imshow(greifer_img, extent=(x - (grip_width / 2), x + (grip_width / 2), y - (grip_height / 2), y + (grip_height / 2)) , alpha=0.5)
 
+    #Enable gripper overlap with part(2/2)
     #plt.gca().invert_yaxis()
     #plt.title("Part Image with Gripper Overlay")
     #plt.show()
