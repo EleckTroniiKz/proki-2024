@@ -11,13 +11,13 @@ def find_gripper(part_folder):
     """
     # Look for PNG first
     gripper_file = next(
-        (f for f in part_folder.iterdir() if f.is_file() and re.match(r'^gripper_\d+\.png$', f.name)),
+        (f for f in part_folder.iterdir() if f.is_file() and re.match(r'^gripper_\d+\.svg$', f.name)),
         None
     )
     # If no PNG found, look for SVG
     if not gripper_file:
         gripper_file = next(
-            (f for f in part_folder.iterdir() if f.is_file() and re.match(r'^gripper_\d+\.svg$', f.name)),
+            (f for f in part_folder.iterdir() if f.is_file() and re.match(r'^gripper_\d+\.png$', f.name)),
             None
         )
     return gripper_file

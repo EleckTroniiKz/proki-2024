@@ -4,18 +4,22 @@ from argparse import ArgumentParser
 from rich.progress import track
 import pandas as pd
 
+from algorithm import findCenterOfGripper
+
+
+
 
 def compute_amazing_solution(
     part_image_path: Path, gripper_image_path: Path
 ) -> tuple[float, float, float]:
-    """Compute the solution for the given part and gripper images.
+    print(part_image_path)
+    coords = findCenterOfGripper(part_image_path, gripper_image_path)
+    if coords is None:
+        print(f"Kein Schwerpunkt für {part_image_path}. Zeile überspringen.")
+        return None, None, None
 
-    :param part_image_path: Path to the part image
-    :param gripper_image_path: Path to the gripper image
-    :return: The x, y and angle of the gripper
-    """
 
-    return 100.1, 95, 91.2
+    return coords
 
 
 def main():
