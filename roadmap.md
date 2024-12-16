@@ -6,11 +6,11 @@
     * Wöchentliche Meetings (Fix Meeting Montag, falls nicht, dann wird ein anderer Tag besprochen)
 
  * Pre-Processing
-    * Bilder einlesen (Part, Gripper) [Can]
+    * Bilder einlesen (Part, Gripper) [Done; -> Optimierung und testing von Can ToDO]
     * Kurz-Evaluierung geeigneter Libraries
-    * Parts Masks erstellen (Edge Detection, ...) [Lukas]
+    * Parts Masks erstellen (Edge Detection, ...) [Lukas und Can]
 
- * Algorithmus [Torben] [Philip]
+ * Algorithmus [Torben] [Philip] -> ausgewählter Ansatz: Basically optimierte Brute Forcing
     * TBD -> Gripper positioning and rotation
         * Definition von Algorithmus (alle maybe?)
         * Output: gripper, part, x, y, winkel
