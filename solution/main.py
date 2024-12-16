@@ -1,7 +1,7 @@
 from pathlib import Path
 from argparse import ArgumentParser
 from masker import create_part_mask
-from algorithm import findCenterOfGripper
+from solution.algorithm.algorithm import findCenterOfGripper
 
 from rich.progress import track
 import pandas as pd

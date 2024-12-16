@@ -38,9 +38,9 @@ def findCenterOfGripper(image_path, greifer_path):
 
     greifer_position = calcCenterOfGripper(teil_img, greifer_img)
 
-    #fig, ax = plt.subplots()
-    #ax.imshow(teil_img, cmap="gray")
-    #ax.invert_yaxis()
+    fig, ax = plt.subplots()
+    ax.imshow(teil_img, cmap="gray")
+    ax.invert_yaxis()
 
     # Füge das Gripper-Bild als Overlay hinzu
     if greifer_position is not None:
@@ -52,11 +52,11 @@ def findCenterOfGripper(image_path, greifer_path):
     #rotated_gripper = greifer_img.rotate(z, resample=Image.BICUBIC, center=center)
     
     
-    #ax.imshow(greifer_img, extent=(x - (grip_width / 2), x + (grip_width / 2), y - (grip_height / 2), y + (grip_height / 2)) , alpha=0.5)
+    ax.imshow(greifer_img, extent=(x - (grip_width / 2), x + (grip_width / 2), y - (grip_height / 2), y + (grip_height / 2)) , alpha=0.5)
 
-    #plt.gca().invert_yaxis()
-    #plt.title("Part Image with Gripper Overlay")
-    #plt.show()
+    plt.gca().invert_yaxis()
+    plt.title("Part Image with Gripper Overlay")
+    plt.show()
 
 
 
