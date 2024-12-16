@@ -6,7 +6,7 @@ import numpy as np
 from rich.progress import track
 import pandas as pd
 
-def create_part_mask(part_image_path: Path, invert_mask: bool = False, blur_method = "median", adaptive = True, area_filter = True) -> np.ndarray:
+def create_part_mask(part_image_path: Path, invert_mask: bool = False, blur_method = "median", adaptive = True, area_filter = True, show_images = False) -> np.ndarray:
     # Load the image
     img = cv2.imread(str(part_image_path), cv2.IMREAD_COLOR)
     if img is None:
@@ -43,10 +43,11 @@ def create_part_mask(part_image_path: Path, invert_mask: bool = False, blur_meth
                 cv2.drawContours(clean_mask, [cnt], -1, (255, 255, 255), -1)
         mask = clean_mask
 
-    cv2.imshow("Before", img)
-    cv2.imshow("Mask", mask)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    if(show_images):
+        cv2.imshow("Before", img)
+        cv2.imshow("Mask", mask)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
     return mask
 
