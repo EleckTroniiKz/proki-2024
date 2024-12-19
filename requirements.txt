@@ -1,3 +1,7 @@
 pandas
 numpy
 rich
+cairosvg
+scipy
+matplotlib
+scipy
