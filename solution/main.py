@@ -12,22 +12,7 @@ def compute_amazing_solution(
 ) -> tuple[float, float, float]:
     print(part_image_path)
     coords = run_algorithm(part_image_path, gripper_image_path)
-    if coords is None:
-        print(f"Kein Schwerpunkt für {part_image_path}. Zeile überspringen.")
-        return None, None, None
-
-
     return coords
-    """Compute the solution for the given part and gripper images.
-
-    :param part_image_path: Path to the part image
-    :param gripper_image_path: Path to the gripper image
-    :return: The x, y and angle of the gripper
-    """
-
-    a = create_part_mask(part_image_path)
-
-    return 100.1, 95, 91.2
 
 
 def main():
@@ -55,7 +40,9 @@ def main():
         gripper_image_path = Path(row["gripper"])
         assert part_image_path.exists(), f"{part_image_path} does not exist"
         assert gripper_image_path.exists(), f"{gripper_image_path} does not exist"
-        x, y, angle = compute_amazing_solution(part_image_path, gripper_image_path)
+        result = compute_amazing_solution(part_image_path, gripper_image_path)
+        assert result is not None, f"No result for {part_image_path} and {gripper_image_path}"
+        x, y, angle = result
         results.append([str(part_image_path), str(gripper_image_path), x, y, angle])
 
     # save the results to the output csv file
