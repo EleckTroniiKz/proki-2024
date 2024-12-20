@@ -4,8 +4,19 @@ from matplotlib import patches
 import numpy as np
 from scipy.ndimage import rotate
 import matplotlib.pyplot as plt
-import cairosvg
 
+
+def reduce_image_quality(image, scale_factor):
+    """
+    Reduces the image quality by scaling it down using PIL.
+    """
+
+    width, height = image.size
+    new_width = int(width * scale_factor)
+    new_height = int(height * scale_factor)
+
+    downscaled_image = image.resize((new_width, new_height), Image.LANCZOS)
+    return downscaled_image
 
 
 def create_mask_from_png(part_img):
@@ -72,7 +83,7 @@ def calc_best_position(part_image, gripper_image):
     """
     Calculates the best position and angle for the gripper on the part using template matching.
     """
-    for x in range(0, part_image.width, 13):
+    for x in range(0, part_image.width, 1):
         for y in range(0, part_image.height, 13):
             for angle in range(0, 360, 45):
                 #print(f"Checking position: x={x}, y={y}, angle={angle}")  
@@ -120,8 +131,13 @@ def run_algorithm(part_path, gripper_path):
     part_img = Image.open(part_path).convert("L")
     gripper_img = Image.open(gripper_path).convert("RGBA")
 
+    part_img = reduce_image_quality(part_img, 0.5)
+    gripper_img = reduce_image_quality(gripper_img, 0.5)
+
     # Calculate the best position and angle for the gripper on the part
     result = calc_best_position(part_img, gripper_img)
+
+    visualize_gripper_on_part(part_img, gripper_img, 95, 55, 0)
     
     if result is not None:
         best_x, best_y, best_angle = result
