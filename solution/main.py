@@ -22,10 +22,6 @@ def compute_amazing_solution(
 ) -> tuple[float, float, float]:
     print(part_image_path)
     coords = run_algorithm(part_image_path, gripper_image_path)
-    if coords is None:
-        print(f"Kein Schwerpunkt für {part_image_path}. Zeile überspringen.")
-        return None, None, None
-
     return coords
 
 
