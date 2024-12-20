@@ -74,6 +74,18 @@ def calc_best_position(part_mask, gripper_mask):
     return None
 
 
+def reduce_image_quality(image, scale_factor):
+    """
+    Reduces the image quality by scaling it down using PIL.
+    """
+
+    width, height = image.size
+    new_width = int(width * scale_factor)
+    new_height = int(height * scale_factor)
+
+    downscaled_image = image.resize((new_width, new_height), Image.LANCZOS)
+    return downscaled_image
+
 
 def is_valid_configuration(part_mask, gripper_mask, x, y, angle):
     """
@@ -182,7 +194,7 @@ def calc_best_position(part_image, gripper_image):
     """
     Calculates the best position and angle for the gripper on the part using template matching.
     """
-    for x in range(0, part_image.width, 13):
+    for x in range(0, part_image.width, 1):
         for y in range(0, part_image.height, 13):
             for angle in range(0, 360, 45):
                 #print(f"Checking position: x={x}, y={y}, angle={angle}")  
