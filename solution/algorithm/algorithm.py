@@ -142,4 +142,45 @@ def visualize_gripper_on_part(part_mask, gripper_mask, x, y, angle):
     plt.gca().invert_yaxis()
     plt.show()
 
+def findPartsMinimalRadius(image):
+    width, height = image.size
+    # - 1 because when one subtracted the gripper would be always invalid while places near an edge
+    return min(width, height) - 1
 
+
+
+def run_algorithm(part_path, gripper_path):
+    """
+    Runs the algorithm to find the best position and angle for the gripper on the part.
+    """
+    part_img = Image.open(part_path).convert("L")
+    gripper_img = Image.open(gripper_path).convert("RGBA")
+
+    #get the minimum distance that a gripper has to be away from the edges
+    # calucalting on original sizes
+    minimumDistanceToBlackListPixles = findPartsMinimalRadius(gripper_img)
+    print(minimumDistanceToBlackListPixles)
+
+    #TODO(Torben) crate function that creates 2D-boolean array from bitmask of part and mark the invalid pixels 
+
+
+    part_img = reduce_image_quality(part_img, 0.5)
+    gripper_img = reduce_image_quality(gripper_img, 0.5)
+
+    # Calculate the best position and angle for the gripper on the part
+    result = calc_best_position(part_img, gripper_img)
+
+    visualize_gripper_on_part(part_img, gripper_img, 95, 55, 0)
+    
+    if result is not None:
+        best_x, best_y, best_angle = result
+
+    else: 
+        return None
+
+    # Visualize the gripper on the part image
+    visualize_gripper_on_part(part_img, gripper_img, best_x, best_y, best_angle)
+
+
+    print(f"Best Position: x={best_x}, y={best_y}, angle={best_angle}")
+    return best_x, best_y, best_angle
