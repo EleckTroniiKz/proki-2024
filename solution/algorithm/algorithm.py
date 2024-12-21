@@ -1,3 +1,4 @@
+from collections import deque
 from PIL import Image
 import cv2
 from matplotlib import patches
@@ -21,10 +22,15 @@ def run_algorithm(part_path, gripper_path):
     gripper_mask = np.array(gripper_img)[:, :, 3] > 0  # Nur Alpha-Kanal verwenden
 
     
+    midPointOfPartmask = get_middle_point_of(part_mask)
+    print(f"The middle point of {part_path} is: {midPointOfPartmask}")
+    # getValidPointNearestToCenter(part_mask,gripper_mask, midPointOfPartmask)
 
     # Calculate the best position and angle for the gripper on the part
-    result = calc_best_position(part_mask, gripper_mask)
- 
+    # result = calc_best_position(part_mask, gripper_mask)
+    result  = getValidPointNearestToCenter(part_mask,gripper_mask, midPointOfPartmask)
+    print(result)
+    
     if result is not None:
         best_x, best_y, best_angle = result
     else: 
@@ -74,7 +80,8 @@ def is_valid_configuration(part_mask, gripper_mask, x, y, angle):
     Returns True if the gripper is fully inside the part, otherwise False.
     """
 
-
+    #+, true, means white so a hole
+    #-, false means solid part
     rotated_gripper_mask = rotate(gripper_mask, -angle , reshape=True, order=0)
     rotated_gripper_mask = ~rotated_gripper_mask # False if the pixel is part of the gripper (marked black), True otherwise
     
@@ -158,9 +165,67 @@ def visualize_gripper_on_part(part_mask, gripper_mask, x, y, angle):
     plt.show()
 
 def findPartsMinimalRadius(image):
+    """
+    Calculate the minimal radius for parts to determine which pixels can be blacklisted 
+    without even looking at them because they will always be to close to an edge.
+
+    Args:
+        image (PIL.Image.Image): The image object for which the minimal radius is to be calculated.
+
+    Returns:
+        int: The minimal radius for parts, which is the smaller dimension of the image minus one.
+    """
     width, height = image.size
     # - 1 because when one subtracted the gripper would be always invalid while places near an edge
     return min(width, height) - 1
+
+def get_middle_point_of(array):
+    """
+    Gets the middle point of the given numpy array.
+
+    Args:
+        array (numpy.ndarray): The array for which the middle point is to be calculated.
+
+    Returns:
+        tuple: The (x, y) coordinates of the middle point of the array.
+    """
+    height, width = array.shape
+    middle_x = width // 2
+    middle_y = height // 2
+    return middle_x, middle_y
+
+
+def getValidPointNearestToCenter(array, overlay,  midPoint):
+    """
+    Executes a breadth-first search to find the nearest valid point to the center.
+
+    Args:
+        array (numpy.ndarray): The array to search within.
+        midPoint (tuple): The (x, y) coordinates of the middle point of the array.
+
+    Returns:
+        tuple: The (x, y) coordinates of the nearest valid point.
+    """
+    
+
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+    queue = deque([midPoint])
+    visited = set()
+    visited.add(midPoint)
+
+    while queue:
+        x, y = queue.popleft()
+        for angle in range(0, 360, 45):
+            if is_valid_configuration(array, overlay, x, y, angle):
+                return x, y, angle
+
+        for dx, dy in directions:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < array.shape[1] and 0 <= ny < array.shape[0] and (nx, ny) not in visited:
+                queue.append((nx, ny))
+                visited.add((nx, ny))
+
+    return None  # If no valid position is found
 
 
 
