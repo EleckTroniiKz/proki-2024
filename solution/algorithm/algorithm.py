@@ -148,10 +148,9 @@ def is_valid_configuration(part_mask, gripper_mask, x, y, angle):
 
 
     rotated_gripper_mask = rotate(gripper_mask, -angle , reshape=True, order=0)
-    rotated_gripper_mask = ~rotated_gripper_mask
-
+    rotated_gripper_mask = ~rotated_gripper_mask # False if the pixel is part of the gripper (marked black), True otherwise
+    
     rotated_gripper_height, rotated_gripper_width = rotated_gripper_mask.shape
-
     
     # Calculate the bounding box of the gripper
     gripper_left = x - rotated_gripper_width // 2
@@ -159,36 +158,28 @@ def is_valid_configuration(part_mask, gripper_mask, x, y, angle):
     gripper_top = y - rotated_gripper_height // 2
     gripper_bottom = y + rotated_gripper_height // 2
 
-
+    # Adjust the bounding box if the gripper has an even width or height
     if rotated_gripper_height % 2 == 0:
         gripper_bottom -= 1
 
     if rotated_gripper_width % 2 == 0:
         gripper_right -= 1
 
-    # oder (ToDo: Test for both)
-    #if rotated_gripper_height % 2 == 0:
-    #    gripper_top += 1
-    #if rotated_gripper_width % 2 == 0:
-    #    gripper_left += 1
 
-
-    # Check if the gripper is fully inside the part
-    for i in range(gripper_left, gripper_right):
-        for j in range(gripper_top, gripper_bottom):
-            
+    # Check if the gripper is fully inside the part; Note: range(2,5) is for [2,3,4]
+    for i in range(gripper_left, gripper_right+1):
+        for j in range(gripper_top, gripper_bottom+1):
+                      
             if 0 <= i < part_mask.shape[1] and 0 <= j < part_mask.shape[0]:  # Check if the pixel is inside the part image
-                if not rotated_gripper_mask[j - gripper_top, i - gripper_left] and part_mask[j, i]:
-                    return False  # no valid configuration
+                if not rotated_gripper_mask[j - gripper_top, i - gripper_left] and part_mask[j, i]:  # Check if the gripper is on the part   
+                    return False  # gripper is on hole
             
             else:              
-                return False
-    
-    print(x, y, angle)
-    print("Valid configuration found.")
-    
-    return True
-    #return True  # The gripper is fully inside the part
+                return False # gripper not fully inside the part shape
+ 
+    visualize_gripper_on_part(part_mask, gripper_mask, x, y, angle)
+    return False
+    return True  # The gripper is fully inside the part
 
 
 
@@ -196,8 +187,6 @@ def visualize_gripper_on_part(part_mask, gripper_mask, x, y, angle):
     """
     Visualizes the gripper on the part image at the given position and angle.
     """
-
-    
     
     # Rotate the gripper image
     rotated_gripper_mask = rotate(gripper_mask, angle, reshape=True, order=0)
@@ -205,14 +194,37 @@ def visualize_gripper_on_part(part_mask, gripper_mask, x, y, angle):
     # Create a new figure
     fig, ax = plt.subplots()
     ax.imshow(part_mask, cmap="gray", origin="upper")
-
     
-    gripper_height, gripper_width = rotated_gripper_mask.shape
+    rotated_gripper_height, rotated_gripper_width = rotated_gripper_mask.shape
 
+    # Calculate the bounding box of the gripper
+    gripper_left = x - rotated_gripper_width // 2 
+    gripper_right = x + rotated_gripper_width // 2 
+    gripper_top = y - rotated_gripper_height // 2
+    gripper_bottom = y + rotated_gripper_height // 2
+
+    gripper_left = gripper_left - 0.5
+    gripper_top = gripper_top - 0.5
+
+    if rotated_gripper_height % 2 == 0:
+        gripper_bottom -= 0.5
+    else:
+        gripper_bottom += 0.5
+
+    if rotated_gripper_width % 2 == 0:
+        gripper_right -= 0.5
+    else:
+        gripper_right += 0.5
+
+
+      
+
+
+    # Define the bounding box of the gripper
+    gripper_on_part = (gripper_left, gripper_right, gripper_top, gripper_bottom)
     # Add the gripper image to the plot
-    ax.imshow(rotated_gripper_mask, cmap="Blues", extent=(x - (gripper_width / 2), x + (gripper_width / 2), y - (gripper_height / 2), y + (gripper_height / 2)), alpha=0.3, origin="upper")
+    ax.imshow(rotated_gripper_mask, cmap="Blues", extent = gripper_on_part, alpha=0.3, origin="upper")
 
-    
     ax.set_title("Gripper Visualisierung")
     plt.gca().invert_yaxis()
     plt.show()
