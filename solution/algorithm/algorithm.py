@@ -146,7 +146,8 @@ def is_valid_configuration(part_mask, gripper_mask, x, y, angle):
     Returns True if the gripper is fully inside the part, otherwise False.
     """
 
-
+    #+, true, means white so a hole
+    #-, false means solid part
     rotated_gripper_mask = rotate(gripper_mask, -angle , reshape=True, order=0)
     rotated_gripper_mask = ~rotated_gripper_mask # False if the pixel is part of the gripper (marked black), True otherwise
     
@@ -266,9 +267,54 @@ def findPartsMinimalRadius(image):
     # - 1 because when one subtracted the gripper would be always invalid while places near an edge
     return min(width, height) - 1
 
-def get_middle_point_of(array) -> tuple:
+def get_middle_point_of(array):
     """
     Gets the middle point of the given numpy array.
+
+    Args:
+        array (numpy.ndarray): The array for which the middle point is to be calculated.
+
+    Returns:
+        tuple: The (x, y) coordinates of the middle point of the array.
+    """
+    height, width = array.shape
+    middle_x = width // 2
+    middle_y = height // 2
+    return middle_x, middle_y
+
+
+def getValidPointNearestToCenter(array, overlay,  midPoint):
+    """
+    Executes a breadth-first search to find the nearest valid point to the center.
+
+    Args:
+        array (numpy.ndarray): The array to search within.
+        midPoint (tuple): The (x, y) coordinates of the middle point of the array.
+
+    Returns:
+        tuple: The (x, y) coordinates of the nearest valid point.
+    """
+    
+
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+    queue = deque([midPoint])
+    visited = set()
+    visited.add(midPoint)
+
+    while queue:
+        x, y = queue.popleft()
+        for angle in range(0, 360, 45):
+            if is_valid_configuration(array, overlay, x, y, angle):
+                return x, y, angle
+
+        for dx, dy in directions:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < array.shape[1] and 0 <= ny < array.shape[0] and (nx, ny) not in visited:
+                queue.append((nx, ny))
+                visited.add((nx, ny))
+
+    return None  # If no valid position is found
+
 
     Args:
         array (numpy.ndarray): The array for which the middle point is to be calculated.
