@@ -6,6 +6,34 @@ from scipy.ndimage import rotate
 import matplotlib.pyplot as plt
 
 
+def run_algorithm(part_path, gripper_path):
+    """
+    Runs the algorithm to find the best position and angle for the gripper on the part.
+    """
+    part_img = Image.open(part_path).convert("L")
+    gripper_img = Image.open(gripper_path).convert("RGBA")
+
+    part_img = reduce_image_quality(part_img, 0.2)
+    gripper_img = reduce_image_quality(gripper_img, 0.2)
+
+    part_mask = np.array(part_img) > 0
+    gripper_mask = np.array(gripper_img)[:, :, 3] > 0  # Nur Alpha-Kanal verwenden
+
+    # Calculate the best position and angle for the gripper on the part
+    result = calc_best_position(part_mask, gripper_mask)
+ 
+    if result is not None:
+        best_x, best_y, best_angle = result
+    else: 
+        return None
+
+    # Visualize the gripper on the part image
+    visualize_gripper_on_part(part_mask, gripper_mask, best_x, best_y, best_angle)
+
+
+    print(f"Best Position: x={best_x}, y={best_y}, angle={best_angle}")
+    return best_x, best_y, best_angle
+
 def reduce_image_quality(image, scale_factor):
     """
     Reduces the image quality by scaling it down using PIL.
@@ -20,6 +48,20 @@ def reduce_image_quality(image, scale_factor):
     return downscaled_image
 
 
+def calc_best_position(part_mask, gripper_mask):
+    """
+    Calculates the best position and angle for the gripper on the part using template matching.
+    """
+    for x in range(0, part_mask.shape[1], 2):
+        for y in range(0, part_mask.shape[0], 2):
+            for angle in range(0, 360, 8):
+
+                if is_valid_configuration(part_mask, gripper_mask, x, y, angle):
+                    print("Valid configuration found.")
+                    print(f"Position: x={x}, y={y}, angle={angle}")
+                    return x, y, angle
+
+    return None
 
 
 
@@ -29,14 +71,6 @@ def is_valid_configuration(part_mask, gripper_mask, x, y, angle):
     Returns True if the gripper is fully inside the part, otherwise False.
     """
 
-    # Load the part image and create a binary mask, True indicates a part pixel
-
-    
-    # Load the gripper image and rotate it
-    #rotated_gripper_width, rotated_gripper_height = gripper_img.size
-
-    # Create a binary mask for the rotated gripper, True indicates a gripper pixel, > 0 is for the red pixels which are marked white in the mask
-    # gripper_mask_flipped = np.flipud(gripper_mask)
 
     rotated_gripper_mask = rotate(gripper_mask, -angle , reshape=True, order=0)
     rotated_gripper_mask = ~rotated_gripper_mask
@@ -67,33 +101,12 @@ def is_valid_configuration(part_mask, gripper_mask, x, y, angle):
     # Check if the gripper is fully inside the part
     for i in range(gripper_left, gripper_right):
         for j in range(gripper_top, gripper_bottom):
-            if 0 <= i < part_mask.shape[1] and 0 <= j < part_mask.shape[0]:  # Check if the pixel is inside the part image
-                
-                # if x == 22 and y == 34 and angle == 0:
-                #     # print(45-gripper_top, 32-gripper_left)
-                #     # print(gripper_mask[45 - gripper_top, 32 - gripper_bottom], part_mask[45, 32])
-                #     # print(gripper_mask[23, 30])
-                #     fig, ax = plt.subplots()
-                #     ax.imshow(rotated_gripper_mask, cmap="gray", origin="upper")
-                #     ax.set_title("Gripper Visualisierung")      
-                #     plt.show()
-
-                # print(j - gripper_top, i - gripper_left)
-                # print(j, i)
-                # print(rotated_gripper_mask.shape)
-                # print(gripper_left, gripper_right, gripper_top, gripper_bottom)
-                # print(angle)
-                # print("test")
-                
-
-                if not rotated_gripper_mask[j - gripper_top, i - gripper_left] and part_mask[j, i]:
-
-
-
-                    return False  # no valid configuration
-            else:
             
-                
+            if 0 <= i < part_mask.shape[1] and 0 <= j < part_mask.shape[0]:  # Check if the pixel is inside the part image
+                if not rotated_gripper_mask[j - gripper_top, i - gripper_left] and part_mask[j, i]:
+                    return False  # no valid configuration
+            
+            else:              
                 return False
     
     print(x, y, angle)
@@ -101,23 +114,6 @@ def is_valid_configuration(part_mask, gripper_mask, x, y, angle):
     
     return True
     #return True  # The gripper is fully inside the part
-
-
-def calc_best_position(part_mask, gripper_mask):
-    """
-    Calculates the best position and angle for the gripper on the part using template matching.
-    """
-    for x in range(0, part_mask.shape[1], 2):
-        for y in range(0, part_mask.shape[0], 2):
-            for angle in range(0, 360, 8):
-
-                if is_valid_configuration(part_mask, gripper_mask, x, y, angle):
-                    print("Valid configuration found.")
-                    print(f"Position: x={x}, y={y}, angle={angle}")
-                    return x, y, angle
-
-    return None
-
 
 
 
@@ -147,35 +143,3 @@ def visualize_gripper_on_part(part_mask, gripper_mask, x, y, angle):
     plt.show()
 
 
-
-def run_algorithm(part_path, gripper_path):
-    """
-    Runs the algorithm to find the best position and angle for the gripper on the part.
-    """
-    part_img = Image.open(part_path).convert("L")
-    gripper_img = Image.open(gripper_path).convert("RGBA")
-
-    part_img = reduce_image_quality(part_img, 0.2)
-    gripper_img = reduce_image_quality(gripper_img, 0.2)
-
-    part_mask = np.array(part_img) > 0
-    gripper_mask = np.array(gripper_img)[:, :, 3] > 0  # Nur Alpha-Kanal verwenden
-
-
-
-    # Calculate the best position and angle for the gripper on the part
-    result = calc_best_position(part_mask, gripper_mask)
-
-    
-    if result is not None:
-        best_x, best_y, best_angle = result
-
-    else: 
-        return None
-
-    # Visualize the gripper on the part image
-    visualize_gripper_on_part(part_mask, gripper_mask, best_x, best_y, best_angle)
-
-
-    print(f"Best Position: x={best_x}, y={best_y}, angle={best_angle}")
-    return best_x, best_y, best_angle
