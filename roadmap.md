@@ -35,10 +35,29 @@
    --> es kann in O(1) überprüft werden, ob ein Grippersaugknopf bei diesem Mittelpunkt valide ist --> Überprüfung O(Anzahl Saugknöpfe)
    Problem: müsste man für alle Winkel machen, also man bräuchte 360 solcher Arrays
 
+   * prüfen wie viel Grad man prüfen muss, maximal immer nur 180 Grad das die Gripper symmetrisch sind.
+
    * Bildqualität verringern: 4 Pixel -> 1 Pixel, und dann algorithmus auf diesem datenset laufen lassen, bei passendem Ergebnis genauer auf originalem Datensatz abarbeiten
 
 
    * calc new angle index (depending on how many pixels overlap)
+
+
+### Fragen
+* Sollen wir eigene Gripper erstellen oder sollen wir die vorhandenen benutzen?
+  * Auf jeden Fall die vorhanden Gripper benutzten und auch mit denen testen, es sollte aber auch generisch für beliebige  nue Gripperarten funktionieren
+
+* Wo ist der Startpunkt des blauen Punktes
+  * baluer Punkte ist 0 Grad auf der Waagerechte
+  * Grad wächst im Uhrzeigersinn -> siehe readMe
+* 
+* Warum sind ganz unten keine Gripper gegeben?
+  * keine Gripper vorgeschrieben, einfach Daten mit denen wir noch weiter ausprobieren können
+* 
+* Gripper selber erstellen oder so?
+  * kann man machen um auf generische funktionalität zu testen
+
+* Evaluate Ordner -> wird noch verbessert! 
 
 * position is_valid methode
 

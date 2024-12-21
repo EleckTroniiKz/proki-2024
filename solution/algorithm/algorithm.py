@@ -142,4 +142,9 @@ def visualize_gripper_on_part(part_mask, gripper_mask, x, y, angle):
     plt.gca().invert_yaxis()
     plt.show()
 
+def findPartsMinimalRadius(image):
+    width, height = image.size
+    # - 1 because when one subtracted the gripper would be always invalid while places near an edge
+    return min(width, height) - 1
+
 
