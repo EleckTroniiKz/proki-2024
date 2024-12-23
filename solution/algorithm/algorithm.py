@@ -178,8 +178,8 @@ def is_valid_configuration(part_mask, gripper_mask, x, y, angle):
             else:              
                 return False # gripper not fully inside the part shape
  
-    visualize_gripper_on_part(part_mask, gripper_mask, x, y, angle)
-    return False
+    # visualize_gripper_on_part(part_mask, gripper_mask, x, y, angle)
+    # return False
     return True  # The gripper is fully inside the part
 
 
@@ -218,13 +218,30 @@ def visualize_gripper_on_part(part_mask, gripper_mask, x, y, angle):
         gripper_right += 0.5
 
 
-      
-
-
     # Define the bounding box of the gripper
     gripper_on_part = (gripper_left, gripper_right, gripper_top, gripper_bottom)
     # Add the gripper image to the plot
     ax.imshow(rotated_gripper_mask, cmap="Blues", extent = gripper_on_part, alpha=0.3, origin="upper")
+
+    # ax = mark_points_on_figure(ax, get_middle_point_of(part_mask), (x,y))
+    midPoint = get_middle_point_of(part_mask)
+    
+    # dye middel point of gripper blue
+    if gripper.shape[0] % 2 == 0:  # Even widht
+        for j in range(part_mask.shape[0]):
+            ax.plot(midPoint[0], j, marker='o', color='#FF0000')
+    else:
+        ax.plot(midPoint[0], midPoint[1], marker='o', color='#FF0000')
+
+    if part_mask.shape[1] % 2 == 0:  # Even height
+        for i in range(part_mask.shape[1]/ 2, part_mask.shape[1]//2 + 1):
+            ax.plot(i, midPoint[1], marker='o', color='#0000FF')
+    else:
+        ax.plot(midPoint[0], midPoint[1], marker='o', color='#0000FF')
+    
+    
+    ax.plot(x, y, marker='o', color='#0000FF')
+
 
     ax.set_title("Gripper Visualisierung")
     plt.gca().invert_yaxis()
@@ -267,7 +284,7 @@ def findPartsMinimalRadius(image):
     # - 1 because when one subtracted the gripper would be always invalid while places near an edge
     return min(width, height) - 1
 
-def get_middle_point_of(array):
+def get_middle_point_of(array) -> tuple:
     """
     Gets the middle point of the given numpy array.
 
@@ -277,9 +294,17 @@ def get_middle_point_of(array):
     Returns:
         tuple: The (x, y) coordinates of the middle point of the array.
     """
+    # TODO(Torben) check here for odd middle of part width and/or height and think about how to handle
     height, width = array.shape
-    middle_x = width // 2
-    middle_y = height // 2
+    # if (width % 2 == 1): 
+    middle_x = width // 2 + 1
+    # else : 
+    #     middle_x = (width // 2, width // 2 + 1)
+    
+    # if (height % 2 == 1): 
+    middle_y = height // 2 + 1
+    # else : 
+    #     middle_y = (height // 2, height // 2 + 1)
     return middle_x, middle_y
 
 
@@ -295,7 +320,6 @@ def getValidPointNearestToCenter(array, overlay,  midPoint):
         tuple: The (x, y) coordinates of the nearest valid point.
     """
     
-
     directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
     queue = deque([midPoint])
     visited = set()
