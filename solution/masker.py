@@ -1,59 +1,40 @@
-import cv2 # wenn ihr das package nicht habt, führt pip install opencv-python aus
-from pathlib import Path
+import cv2
 import numpy as np
+import os
+# Load the image
+# Load the first provided part image for processing
 
-def create_part_mask(part_image_path: Path, invert_mask: bool = False, blur_method = "median", adaptive = True, area_filter = True, show_images = False) -> np.ndarray:
-    # Load the image
-    img = cv2.imread(str(part_image_path), cv2.IMREAD_COLOR)
-    if img is None:
-        raise ValueError(f"Could not read the image from {part_image_path}")
+def create_part_mask(part_image_path):
+    part_image_blur = cv2.imread(part_image_path)
+    blurred_image = cv2.GaussianBlur(part_image_blur, (5, 5), 0)
+    part_image = cv2.cvtColor(blurred_image, cv2.COLOR_BGR2GRAY)
 
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    equalized_image = clahe.apply(part_image)
 
-    gray = cv2.equalizeHist(gray)
+    tile_size = 100  #tile size 100x100
+    h, w = equalized_image.shape
+    result_mask = np.zeros_like(equalized_image)
 
-    if blur_method == "gaussian":
-        gray = cv2.GaussianBlur(gray, (5, 5), 0)
-    elif blur_method == "median":
-        gray = cv2.medianBlur(gray, 5)
+    for y in range(0, h, tile_size):
+        for x in range(0, w, tile_size):
+            tile = equalized_image[y:y+tile_size, x:x+tile_size]
 
-    if adaptive:
-        mask = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-                                     cv2.THRESH_BINARY_INV, 21, 5)
-    else:
-        # Otsu
-        _, mask = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+            tile_thresh = cv2.adaptiveThreshold(
+                tile, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 2
+            )
 
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+            result_mask[y:y+tile_thresh.shape[0], x:x+tile_thresh.shape[1]] = tile_thresh
 
-    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel, iterations=1)
-    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=1)
+    num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(result_mask, connectivity=8)
+    filtered_mask = np.zeros_like(result_mask)
 
-    if area_filter:
-        contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        clean_mask = np.zeros_like(mask)
-        area_threshold = 100
-        for cnt in contours:
-            area = cv2.contourArea(cnt)
-            if area > area_threshold:
-                cv2.drawContours(clean_mask, [cnt], -1, (255, 255, 255), -1)
-        mask = clean_mask
+    min_area = 100  # Minimum area to retain a component
+    for i in range(1, num_labels):  # Skip the background label
+        if stats[i, cv2.CC_STAT_AREA] >= min_area:
+            filtered_mask[labels == i] = 255
 
-    if(show_images):
-        cv2.imshow("Before", img)
-        cv2.imshow("Mask", mask)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+    output_path = os.path.join("_masks", f"{part_image_path}_output.png")
+    cv2.imwrite(output_path, filtered_mask)
 
-    masks_dir = (Path(__file__).resolve().parent / "_masks")
-    masks_dir.mkdir(exist_ok=True)
-
-    original_stem = part_image_path.stem
-    mask_filename = masks_dir / f"{original_stem}_mask.png"
-    original_filename = masks_dir / f"{original_stem}_original.png"
-
-    cv2.imwrite(str(original_filename), img)
-    cv2.imwrite(str(mask_filename), mask)
-
-    return mask
-
+    return filtered_mask
