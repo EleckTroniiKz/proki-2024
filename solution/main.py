@@ -1,7 +1,11 @@
 from pathlib import Path
 from argparse import ArgumentParser
+from tkinter import Image
+
+import numpy as np
 from masker import create_part_mask
 from solution.algorithm.algorithm import findCenterOfGripper
+from solution.NeuronalNetwork.BitMaskGenerator import find_optimal_position, predict, model, transform
 
 from rich.progress import track
 import pandas as pd
@@ -10,14 +14,24 @@ import pandas as pd
 def compute_amazing_solution(
     part_image_path: Path, gripper_image_path: Path
 ) -> tuple[float, float, float]:
-    print(part_image_path)
-    coords = findCenterOfGripper(part_image_path, gripper_image_path)
-    if coords is None:
-        print(f"Kein Schwerpunkt für {part_image_path}. Zeile überspringen.")
-        return None, None, None
+    
+    return find_optimal_position()
+
+    # Create the part mask using the neural network
+    # part_mask = predict(part_image_path, model, transform)
+    
+    # # Optionally, save the part mask for verification
+    # Image.fromarray((part_mask * 255).astype(np.uint8)).save('part_mask.png')
 
 
-    return coords
+    # print(part_image_path)
+    # coords = findCenterOfGripper(part_image_path, gripper_image_path)
+    # if coords is None:
+    #     print(f"Kein Schwerpunkt für {part_image_path}. Zeile überspringen.")
+    #     return None, None, None
+
+
+    # return coords
     """Compute the solution for the given part and gripper images.
 
     :param part_image_path: Path to the part image
