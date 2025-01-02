@@ -6,13 +6,14 @@ from matplotlib.axes import Axes
 import numpy as np
 from scipy.ndimage import rotate
 import matplotlib.pyplot as plt
+from masker import create_part_mask
 
 
 def run_algorithm(part_path, gripper_path):
     """
     Runs the algorithm to find the best position and angle for the gripper on the part.
     """
-    part_img = Image.open(part_path).convert("L")
+    part_img = create_part_mask(part_path).convert("L")
     gripper_img = Image.open(gripper_path).convert("RGBA")
 
     part_img = reduce_image_quality(part_img, 0.2)

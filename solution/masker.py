@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import os
+from PIL import Image
 # Load the image
 # Load the first provided part image for processing
 
@@ -37,4 +38,4 @@ def create_part_mask(part_image_path):
     output_path = os.path.join("_masks", f"{part_image_path}_output.png")
     cv2.imwrite(output_path, filtered_mask)
 
-    return filtered_mask
+    return Image.fromarray(filtered_mask)
