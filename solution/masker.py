@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 from PIL import Image
 import os
-from PIL import Image
 # Load the image
 # Load the first provided part image for processing
 
