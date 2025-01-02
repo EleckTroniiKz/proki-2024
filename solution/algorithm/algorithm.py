@@ -23,7 +23,6 @@ def run_algorithm(part_path, gripper_path):
     # True if pixel is part of the gripper, False otherwise
     gripper_mask = np.array(gripper_img)[:, :, 3] > 0  # Nur Alpha-Kanal verwenden
 
-    
     midPointOfPartmask = get_middle_point_of(part_mask)
     print(f"The middle point of {part_path} is: {midPointOfPartmask}")
     # getValidPointNearestToCenter(part_mask,gripper_mask, midPointOfPartmask)
@@ -73,71 +72,6 @@ def calc_best_position(part_mask, gripper_mask):
                     return x, y, angle
 
     return None
-
-
-def reduce_image_quality(image, scale_factor):
-    """
-    Reduces the image quality by scaling it down using PIL.
-    """
-
-    width, height = image.size
-    new_width = int(width * scale_factor)
-    new_height = int(height * scale_factor)
-
-    downscaled_image = image.resize((new_width, new_height), Image.NEAREST)
-
-    return downscaled_image
-
-
-def is_valid_configuration(part_mask, gripper_mask, x, y, angle):
-    """
-    Check if the gripper is in a valid configuration on the part.
-    Returns True if the gripper is fully inside the part, otherwise False.
-    """
-
-    #+, true, means white so a hole
-    #-, false means solid part
-    rotated_gripper_mask = rotate(gripper_mask, -angle , reshape=True, order=0)
-    rotated_gripper_mask = ~rotated_gripper_mask # False if the pixel is part of the gripper (marked black), True otherwise
-    
-    rotated_gripper_height, rotated_gripper_width = rotated_gripper_mask.shape
-    
-    # Calculate the bounding box of the gripper
-    gripper_left = x - rotated_gripper_width // 2
-    gripper_right = x + rotated_gripper_width // 2
-    gripper_top = y - rotated_gripper_height // 2
-    gripper_bottom = y + rotated_gripper_height // 2
-
-    # Adjust the bounding box if the gripper has an even width or height
-    if rotated_gripper_height % 2 == 0:
-        gripper_bottom -= 1
-
-    if rotated_gripper_width % 2 == 0:
-        gripper_right -= 1
-
-
-    # Check if the gripper is fully inside the part; Note: range(2,5) is for [2,3,4]
-    for i in range(gripper_left, gripper_right+1):
-        for j in range(gripper_top, gripper_bottom+1):
-                      
-            if 0 <= i < part_mask.shape[1] and 0 <= j < part_mask.shape[0]:  # Check if the pixel is inside the part image
-                if not rotated_gripper_mask[j - gripper_top, i - gripper_left] and part_mask[j, i]:  # Check if the gripper is on the part   
-                    return False  # gripper is on hole
-            
-            else:              
-                return False # gripper not fully inside the part shape
- 
-    # visualize_gripper_on_part(part_mask, gripper_mask, x, y, angle)
-    # return False
-    return True  # The gripper is fully inside the part
-
-
-def create_mask_from_png(image_path):
-    """
-    Creates a binary mask from a PNG image.
-    """
-    threshold = 1  
-    mask = np.array(part_img) < threshold
 
 
 
@@ -248,7 +182,7 @@ def visualize_gripper_on_part(part_mask, gripper_mask, x, y, angle):
     plt.gca().invert_yaxis()
     plt.show()
 
-    def mark_points_on_figure(ax, point1, point2):
+def mark_points_on_figure(ax, point1, point2):
         """
         Marks two given points on the part image using the provided plot axis.
 
@@ -339,40 +273,3 @@ def getValidPointNearestToCenter(array, overlay,  midPoint):
                 visited.add((nx, ny))
 
     return None  # If no valid position is found
-
-
-
-def run_algorithm(part_path, gripper_path):
-    """
-    Runs the algorithm to find the best position and angle for the gripper on the part.
-    """
-    part_img = Image.open(part_path).convert("L")
-    gripper_img = Image.open(gripper_path).convert("RGBA")
-
-    #get the minimum distance that a gripper has to be away from the edges
-    # calucalting on original sizes
-    minimumDistanceToBlackListPixles = findPartsMinimalRadius(gripper_img)
-    print(minimumDistanceToBlackListPixles)
-
-    #TODO(Torben) crate function that creates 2D-boolean array from bitmask of part and mark the invalid pixels 
-
-
-    part_img = reduce_image_quality(part_img, 0.5)
-    gripper_img = reduce_image_quality(gripper_img, 0.5)
-
-    # Calculate the best position and angle for the gripper on the part
-    result = calc_best_position(part_mask, gripper_mask)
-
-    
-    if result is not None:
-        best_x, best_y, best_angle = result
-
-    else: 
-        return None
-
-    # Visualize the gripper on the part image
-    visualize_gripper_on_part(part_mask, gripper_mask, best_x, best_y, best_angle)
-
-
-    print(f"Best Position: x={best_x}, y={best_y}, angle={best_angle}")
-    return best_x, best_y, best_angle
