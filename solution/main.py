@@ -1,22 +1,8 @@
 from pathlib import Path
 from argparse import ArgumentParser
-from masker import create_part_mask
-from algorithm import run_algorithm
-
+from algorithm.algorithm import run_algorithm
 from rich.progress import track
 import pandas as pd
-
-from algorithm import findCenterOfGripper
-from solution.algorithm import findCenterOfGripper
-
-def create_part_mask(part_image_path: Path, invert_mask: bool = False, blur_method = "median", adaptive = True, area_filter = True, show_images = False) -> np.ndarray:
-    # Load the image
-    img = cv2.imread(str(part_image_path), cv2.IMREAD_COLOR)
-    if img is None:
-        raise ValueError(f"Could not read the image from {part_image_path}")
-
-
-
 
 def compute_amazing_solution(
     part_image_path: Path, gripper_image_path: Path
