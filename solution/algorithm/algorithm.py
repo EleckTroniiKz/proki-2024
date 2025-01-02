@@ -340,58 +340,6 @@ def getValidPointNearestToCenter(array, overlay,  midPoint):
     return None  # If no valid position is found
 
 
-    Args:
-        array (numpy.ndarray): The array for which the middle point is to be calculated.
-
-    Returns:
-        tuple: The (x, y) coordinates of the middle point of the array.
-    """
-    # TODO(Torben) check here for odd middle of part width and/or height and think about how to handle
-    height, width = array.shape
-    # if (width % 2 == 1): 
-    middle_x = width // 2 + 1
-    # else : 
-    #     middle_x = (width // 2, width // 2 + 1)
-    
-    # if (height % 2 == 1): 
-    middle_y = height // 2 + 1
-    # else : 
-    #     middle_y = (height // 2, height // 2 + 1)
-    return middle_x, middle_y
-
-
-def getValidPointNearestToCenter(array, overlay,  midPoint):
-    """
-    Executes a breadth-first search to find the nearest valid point to the center.
-
-    Args:
-        array (numpy.ndarray): The array to search within.
-        midPoint (tuple): The (x, y) coordinates of the middle point of the array.
-
-    Returns:
-        tuple: The (x, y) coordinates of the nearest valid point.
-    """
-    
-    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-    queue = deque([midPoint])
-    visited = set()
-    visited.add(midPoint)
-
-    while queue:
-        x, y = queue.popleft()
-        for angle in range(0, 360, 45):
-            if is_valid_configuration(array, overlay, x, y, angle):
-                return x, y, angle
-
-        for dx, dy in directions:
-            nx, ny = x + dx, y + dy
-            if 0 <= nx < array.shape[1] and 0 <= ny < array.shape[0] and (nx, ny) not in visited:
-                queue.append((nx, ny))
-                visited.add((nx, ny))
-
-    return None  # If no valid position is found
-
-
 
 def run_algorithm(part_path, gripper_path):
     """
