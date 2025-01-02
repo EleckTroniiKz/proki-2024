@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from PIL import Image
 import os
 from PIL import Image
 # Load the image
@@ -13,7 +14,7 @@ def create_part_mask(part_image_path):
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
     equalized_image = clahe.apply(part_image)
 
-    tile_size = 100  #tile size 100x100
+    tile_size = 100
     h, w = equalized_image.shape
     result_mask = np.zeros_like(equalized_image)
 
@@ -35,7 +36,13 @@ def create_part_mask(part_image_path):
         if stats[i, cv2.CC_STAT_AREA] >= min_area:
             filtered_mask[labels == i] = 255
 
-    output_path = os.path.join("_masks", f"{part_image_path}_output.png")
+    output_dir = "_masks"
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    output_path = os.path.join("_masks", f"{os.path.basename(part_image_path)}_output.png")
+    print(part_image_path)
+
     cv2.imwrite(output_path, filtered_mask)
 
     return Image.fromarray(filtered_mask)

@@ -64,6 +64,24 @@
 * Visualization:
     * Plot für Gripper auf Part (unter Beachtung des Winkels)
 
+* Algorithmus Idee:
+    * Schwarz Weiß Convertierung
+
+    * (Schwerpunkt bestimmen
+        * Gesamt shape bestimmen
+        * Lücken subtrahieren, um Schwerpunkt zu verschieben
+          (durch Library im Idealfall machen lassen, ansonsten überlegen durch integrale)
+        * dabei Punkt (0,0) beachten
+        * Visualisierung des COM (center of mass)) doch nicht, einfach durch center of image approximieren, warum auch immer
+    
+    * Gripper möglichst in Mitte des Images setzen (Bewertungskriterium)
+    * 2D Bit array ertstellen und testen, ob gripper Position gültig
+
+      * Position bestimmen
+        * gripper in Schwerpunkt setzen und um 360° rotieren, bis möglich
+        * falls nicht auffindbar, anderer Punkt als Schwerpunkt nutzen
+
+* Part, Gripper ändern
 
 
 
