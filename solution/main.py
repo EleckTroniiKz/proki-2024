@@ -40,6 +40,8 @@ def main():
         gripper_image_path = Path(row["gripper"])
         assert part_image_path.exists(), f"{part_image_path} does not exist"
         assert gripper_image_path.exists(), f"{gripper_image_path} does not exist"
+        # ivoke binary masking here
+        binaryMask = create_part_mask(part_image_path)
         result = compute_amazing_solution(part_image_path, gripper_image_path)
         assert result is not None, f"No result for {part_image_path} and {gripper_image_path}"
         x, y, angle = result
