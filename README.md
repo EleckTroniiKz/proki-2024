@@ -4,6 +4,7 @@ Team members:
     - Can Cetin
     - Philip Schättgen
     - Torben Grötzinger
+    - Lukas 
 
 ## Description
 First of all we create a new file containing a path to the png image that we want to match the gripper to.
