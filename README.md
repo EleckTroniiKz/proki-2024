@@ -1,20 +1,20 @@
-# Hackathon 2024 - Submission of Group *// Group Name //*
+# Hackathon 2024 - Submission of Group *AllradAntrieb*
 
 Team members:
-    - // Can Cetin //
-    - // Philip Schättgen //
-    - // Torben Grötzinger //
+    - Can Cetin
+    - Philip Schättgen
+    - Torben Grötzinger
 
 ## Description
-// First of all we create a new file containing a path to the png image that we want to match the gripper to.
+First of all we create a new file containing a path to the png image that we want to match the gripper to.
 Then we create a binary Mask of this png Image.
 We decrease the image quality to speef up our algorithm to determine where we should look in a higher resolution to find the best possible gripper position.
 On this mask we run our basic greedy algorithm.
- It starts at the middle point of the binary mask and test if the gripper can be places with 0 degree, if not we test this with 1 degere and so on.
- If we dont find a valid (degree-)position for the gripper, we get a new point from a bfs that is most near to the middlge point, and check again if we can place the gripper in a valid position. //
+It starts at the middle point of the binary mask and test if the gripper can be places with 0 degree, if not we test this with 1 degere and so on.
+If we dont find a valid (degree-)position for the gripper, we get a new point from a bfs that is most near to the middlge point, and check again if we can place the gripper in a valid position. 
 
 ## How to Run
-// How to run our code: `python(3) solution/main.py path/to/input/tasks.csv output/solutions.csv` 
+How to run our code: `python(3) solution/main.py path/to/input/tasks.csv output/solutions.csv` 
 
 ## ... and other things you want to tell us
 // optional, e.g., design decisions, challenges you faced, etc. //
